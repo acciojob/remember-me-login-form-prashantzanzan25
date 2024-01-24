@@ -1,55 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login Form</title>
 </head>
 <body>
-
   <h1>Login Form</h1>
-
-  <form id="loginForm">
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="username" placeholder="Username">
-
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" placeholder="Password">
-
-    <label for="checkbox">
-      <input type="checkbox" id="checkbox" name="remember"> Remember me
-    </label>
-
-    <input type="submit" id="submit" value="Submit">
+  <form action="/login" method="post">
+    <input type="text" name="username" id="username" placeholder="Username">
+    <input type="password" name="password" id="password" placeholder="Password">
+    <input type="checkbox" name="remember_me" id="remember_me"> Remember me
+    <input type="submit" value="Submit" id="submit">
   </form>
 
   <script>
-    // Test Case 1: Checking form
-it('example to-do app -- Checking form', () => {
-  cy.visit(baseUrl + '/main.html');
-  cy.get('form');
-  cy.get("label[for='username']").contains('Username:');
-  cy.get('input#username').should('be.empty');
-  cy.get("label[for='password']").contains('Password:');
-  cy.get('input#password').should('be.empty');
-  cy.get("label[for='checkbox']").contains('Remember me'); // Corrected the label content
-  cy.get('input#checkbox').should('not.be.checked');
-  cy.get('input#submit[value='Submit']').should('exist');
-  cy.get('button#existing').should('not.be.visible');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const rememberMeCheckbox = document.getElementById('remember_me');
 
-  cy.window().then(win => {
-    expect(win.localStorage.getItem('username')).to.be.null;
-    expect(win.localStorage.getItem('password')).to.be.null;
-  });
-});
+    if (localStorage.getItem('username') && localStorage.getItem('password')) {
+      usernameInput.value = localStorage.getItem('username');
+      passwordInput.value = localStorage.getItem('password');
+      rememberMeCheckbox.checked = true;
+    }
 
-// Test Case 2: User Authentication Tests
-it("User Authentication Tests -- should display the 'Login as existing user' button after login", () => {
-  loginUser('username1', 'password1');
-  cy.get('button#existing').should('contain', 'Login as existing user');
-});
+    document.getElementById('submit').addEventListener('click', function() {
+      if (rememberMeCheckbox.checked) {
+        localStorage.setItem('username', usernameInput.value);
+        localStorage.setItem('password', passwordInput.value);
+      } else {
+        localStorage.removeItem('username');
+        localStorage.removeItem('password');
+      }
 
+      alert('Logged in as ' + usernameInput.value);
+    });
+
+    document.getElementById('existing').addEventListener('click', function() {
+      alert('Logged in as ' + localStorage.getItem('username'));
+    });
   </script>
-
 </body>
 </html>
